@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Placeholder Online Game</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 20px; }
+    h1 { color: #333; }
+    #messages { background: #fff; border:1px solid #ccc; height:200px; overflow:auto; padding:10px; margin-bottom:10px; }
+    #msg { width: 70%; padding: 8px; }
+    button { padding: 8px 16px; background: #007bff; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+    button:hover { background: #0056b3; }
+  </style>
+</head>
+<body>
+  <h1>Online Game Placeholder</h1>
+  <div id="messages" style="border:1px solid #ccc; height:200px; overflow:auto;"></div>
+  <input id="room" type="text" placeholder="Enter room code..." />
+  <button onclick="joinRoom()">Join Room</button>
+  <br><br>
+  <input id="msg" type="text" placeholder="Type a message..." disabled />
+  <button id="sendBtn" onclick="sendMsg()" disabled>Send</button>
+  <script>
+    // For local testing, use ws://localhost:8080
+    // For online deployment, replace with your public URL (e.g., wss://your-app.onrender.com)
+    const ws = new WebSocket('ws://localhost:8080');
+    ws.onmessage = function(event) {
+      const messages = document.getElementById('messages');
+      messages.innerHTML += `<div>${event.data}</div>`;
+      messages.scrollTop = messages.scrollHeight;
+    };
+    function joinRoom() {
+      const roomInput = document.getElementById('room');
+      const roomCode = roomInput.value.trim();
+      if (roomCode) {
+        ws.send(JSON.stringify({ type: 'join', roomCode }));
+        document.getElementById('msg').disabled = false;
+        document.getElementById('sendBtn').disabled = false;
+        roomInput.disabled = true;
+      }
+    }
+    function sendMsg() {
+      const input = document.getElementById('msg');
+      ws.send(JSON.stringify({ type: 'msg', text: input.value }));
+      input.value = '';
+    }
+  </script>
+</body>
+</html>
