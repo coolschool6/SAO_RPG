@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SAO RPG Online</title>
+  <style>
+    body { margin: 0; font-family: 'Segoe UI', Arial, sans-serif; background: #181818; color: #fff; }
+    .loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: linear-gradient(135deg, #232526 0%, #414345 100%);
+    }
+    .loader {
+      border: 8px solid #333;
+      border-top: 8px solid #00c3ff;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .enter-btn {
+      padding: 12px 32px;
+      background: #00c3ff;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 1.2em;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .enter-btn:hover {
+      background: #007bb5;
+    }
+    #gameUI { display: none; }
+    /* Game UI styles */
+    #messages { background: #222; border:1px solid #444; height:200px; overflow:auto; padding:10px; margin-bottom:10px; color: #fff; }
+    #room, #msg { width: 70%; padding: 8px; margin-bottom: 8px; }
+    #sendBtn, #joinBtn { padding: 8px 16px; background: #00c3ff; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+    #sendBtn:hover, #joinBtn:hover { background: #007bb5; }
+  </style>
+</head>
+<body>
+  <div class="loading" id="loadingScreen">
+    <div class="loader"></div>
+    <h1>SAO RPG Online</h1>
+    <p>Loading game...</p>
+    <button class="enter-btn" onclick="enterGame()">Enter Game</button>
+  </div>
+  <div id="gameUI">
+    <h2>Online Game Placeholder</h2>
+    <div id="messages"></div>
+    <input id="room" type="text" placeholder="Enter room code..." />
+    <button id="joinBtn" onclick="joinRoom()">Join Room</button>
+    <br><br>
+    <input id="msg" type="text" placeholder="Type a message..." disabled />
+    <button id="sendBtn" onclick="sendMsg()" disabled>Send</button>
+  </div>
+  <script>
+    function enterGame() {
+      document.getElementById('loadingScreen').style.display = 'none';
+      document.getElementById('gameUI').style.display = 'block';
+    }
+    // For local testing, use ws://localhost:8080
+    // For online deployment, replace with your public URL (e.g., wss://your-app.onrender.com)
+    const ws = new WebSocket('ws://localhost:8080');
+    ws.onmessage = function(event) {
+      const messages = document.getElementById('messages');
+      messages.innerHTML += `<div>${event.data}</div>`;
+      messages.scrollTop = messages.scrollHeight;
+    };
+    function joinRoom() {
+      const roomInput = document.getElementById('room');
+      const roomCode = roomInput.value.trim();
+      if (roomCode) {
+        ws.send(JSON.stringify({ type: 'join', roomCode }));
+        document.getElementById('msg').disabled = false;
+        document.getElementById('sendBtn').disabled = false;
+        roomInput.disabled = true;
+        document.getElementById('joinBtn').disabled = true;
+      }
+    }
+    function sendMsg() {
+      const input = document.getElementById('msg');
+      ws.send(JSON.stringify({ type: 'msg', text: input.value }));
+      input.value = '';
+    }
+  </script>
+</body>
+</html>

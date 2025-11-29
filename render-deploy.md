@@ -1,21 +1,14 @@
-# Deploying Your Online Game to Render
+# Running Your Online Game Locally
 
-Render is a free cloud platform for hosting Node.js apps. Here’s how to deploy your game:
+You do NOT need any third-party services. You can run your game directly from your computer.
 
 ## Steps
-1. Go to https://dashboard.render.com/ and sign up (free).
-2. Click "New Web Service" and connect your GitHub repo (push your code to GitHub if not done).
-3. Select your repo and set the following:
-   - Environment: Node
-   - Build Command: `npm install`
-   - Start Command: `npm start`
-4. Render will auto-detect the `PORT` environment variable and run your server.
-5. After deployment, you’ll get a public URL (e.g., `https://your-app.onrender.com`).
-6. Update your `client.html` to use the public WebSocket URL:
-   ```js
-   const ws = new WebSocket('wss://your-app.onrender.com');
-   ```
+1. Open a terminal in your project folder.
+2. Run `npm install` to install dependencies.
+3. Start the server with `npm start` or `node server.js`.
+4. Open `index.html` in your browser.
+5. To allow others to join, share your computer's IP address and ensure port 8080 is open (set up port forwarding if needed).
 
 ## Notes
-- Make sure your code is pushed to GitHub.
-- You can now share your game with anyone online!
+- No third-party hosting required.
+- Your game is fully self-hosted and private.
